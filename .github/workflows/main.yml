@@ -2,7 +2,7 @@ name: Daily Vocabulary Email
 
 on:
   schedule:
-    - cron: '0 8 * * *'  # Runs at 8:00 AM every day (UTC)
+    - cron: '35 14 * * *'  # Runs at 2:35 PM UTC (equivalent to 8:05 PM SLST)
   workflow_dispatch:  # Allows manual triggering
 
 jobs:
