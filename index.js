@@ -7,7 +7,8 @@ const csv = require('csv-parser');
 // Load environment variables
 dotenv.config();
 const { EMAIL_USER, EMAIL_PASS, RECIPIENT_EMAIL } = process.env;
-console.log(EMAIL_USER, EMAIL_PASS, RECIPIENT_EMAIL);
+
+// Proceed with your email sending logic
 
 // Load word database
 let words = [];
@@ -19,7 +20,10 @@ fs.createReadStream(path.join(__dirname, 'vocabulary_database.csv'))
     console.log("CSV content:", words);
 
   });
-
+  console.log('EMAIL_USER:', process.env.EMAIL_USER);
+  console.log('EMAIL_PASS:', process.env.EMAIL_PASS);  // Be cautious as this might expose sensitive information
+  console.log('RECIPIENT_EMAIL:', process.env.RECIPIENT_EMAIL);
+  
   async function sendEmail(words) {
     // Select 10 words that haven't been sent
     let unsentWords = words.filter((word) => word.sent === 'False');
