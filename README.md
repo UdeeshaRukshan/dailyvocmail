@@ -1,2 +1,2 @@
 # dailyvocmail
-daily vocabulery generator. 
+Daily Vocabulary Email Generator
