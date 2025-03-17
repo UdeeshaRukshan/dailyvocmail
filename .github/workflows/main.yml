@@ -2,7 +2,7 @@ name: Daily Vocabulary Email
 
 on:
   schedule:
-    - cron: '0 8 * * *'  # Runs at 8:00 AM every day
+    - cron: '0 8 * * *'  # Runs at 8:00 AM every day (UTC)
   workflow_dispatch:  # Allows manual triggering
 
 jobs:
@@ -13,27 +13,26 @@ jobs:
     - name: Checkout repository
       uses: actions/checkout@v2
       
-    - name: Set up Python
-      uses: actions/setup-python@v2
+    - name: Set up Node.js
+      uses: actions/setup-node@v2
       with:
-        python-version: '3.9'
+        node-version: '14'
         
     - name: Install dependencies
       run: |
-        python -m pip install --upgrade pip
-        pip install sendgrid pandas
+        npm install nodemailer csv-parser dotenv
         
     - name: Send vocabulary email
       env:
-        SENDGRID_API_KEY: ${{ secrets.SENDGRID_API_KEY }}
-        RECIPIENT_EMAIL: ${{ secrets.RECIPIENT_EMAIL }}
-        SENDER_EMAIL: ${{ secrets.SENDER_EMAIL }}
-      run: python send_vocabulary_email.py
-      
+        EMAIL_USER: ${{ secrets.EMAIL_USER }}  # Your Zoho email, stored as GitHub Secret
+        EMAIL_PASS: ${{ secrets.EMAIL_PASS }}  # Your Zoho app password, stored as GitHub Secret
+        RECIPIENT_EMAIL: ${{ secrets.RECIPIENT_EMAIL }}  # The recipient email, stored as GitHub Secret
+      run: node index.js  # Ensure you have a script to send the email
+
     - name: Update word database
       run: |
         git config --global user.name 'GitHub Actions'
         git config --global user.email 'actions@github.com'
-        git add words_database.csv
+        git add vocabulary_database.csv
         git commit -m "Update word database" || echo "No changes to commit"
         git push
