@@ -8,8 +8,6 @@ const csv = require('csv-parser');
 dotenv.config();
 const { EMAIL_USER, EMAIL_PASS, RECIPIENT_EMAIL } = process.env;
 
-// Proceed with your email sending logic
-
 // Load word database
 let words = [];
 fs.createReadStream(path.join(__dirname, 'vocabulary_database.csv'))
