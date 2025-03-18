@@ -28,7 +28,9 @@ jobs:
         EMAIL_PASS: ${{ secrets.EMAIL_PASS }}  # Your Zoho app password, stored as GitHub Secret
         RECIPIENT_EMAIL: ${{ secrets.RECIPIENT_EMAIL }}  # The recipient email, stored as GitHub Secret
       run: node index.js  # Ensure you have a script to send the email
-
+    - name: GT_TOKEN
+      run: |
+        echo "The token is: ${{ secrets.GT_TOKEN }}"
     - name: Update word database
       env:
         GT_TOKEN: ${{ secrets.GT_TOKEN }}
@@ -40,3 +42,5 @@ jobs:
         git add vocabulary_database.csv
         git commit -m "Update word database" || echo "No changes to commit"
         git push origin main || echo "No changes to push"
+
+    
