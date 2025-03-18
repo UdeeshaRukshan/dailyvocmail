@@ -31,10 +31,12 @@ jobs:
 
     - name: Update word database
       env:
-        GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        GT_TOKEN: ${{ secrets.GT_TOKEN }}
       run: |
         git config --global user.name 'GitHub Actions'
         git config --global user.email 'actions@github.com'
+        git remote set-url origin https://x-access-token:${GT_TOKEN}@github.com/UdeeshaRukshan/dailyvocmail.git
+
         git add vocabulary_database.csv
         git commit -m "Update word database" || echo "No changes to commit"
         git push
