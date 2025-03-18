@@ -15,13 +15,9 @@ fs.createReadStream(path.join(__dirname, 'vocabulary_database.csv'))
   .on('data', (row) => words.push(row))
   .on('end', () => {
     sendEmail(words);
-    console.log("CSV content:", words);
 
   });
-  console.log('EMAIL_USER:', process.env.EMAIL_USER);
-  console.log('EMAIL_PASS:', process.env.EMAIL_PASS);  // Be cautious as this might expose sensitive information
-  console.log('RECIPIENT_EMAIL:', process.env.RECIPIENT_EMAIL);
-  
+
   async function sendEmail(words) {
     // Select 10 words that haven't been sent
     let unsentWords = words.filter((word) => word.sent === 'False');
