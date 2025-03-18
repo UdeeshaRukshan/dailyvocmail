@@ -156,3 +156,5 @@ async function sendEmail(words) {
     }
   });
 }
+
+console.log("Email Service");
