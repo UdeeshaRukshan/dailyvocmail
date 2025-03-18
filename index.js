@@ -1,44 +1,44 @@
-const fs = require('fs');
-const path = require('path');
-const nodemailer = require('nodemailer');
-const dotenv = require('dotenv');
-const csv = require('csv-parser');
+const fs = require("fs");
+const path = require("path");
+const nodemailer = require("nodemailer");
+const dotenv = require("dotenv");
+const csv = require("csv-parser");
 
-// Load environment variables
 dotenv.config();
 const { EMAIL_USER, EMAIL_PASS, RECIPIENT_EMAIL } = process.env;
 
-// Load word database
 let words = [];
-fs.createReadStream(path.join(__dirname, 'vocabulary_database.csv'))
+fs.createReadStream(path.join(__dirname, "vocabulary_database.csv"))
   .pipe(csv())
-  .on('data', (row) => words.push(row))
-  .on('end', () => {
+  .on("data", (row) => words.push(row))
+  .on("end", () => {
     sendEmail(words);
-
   });
 
-  async function sendEmail(words) {
-    // Select 10 words that haven't been sent
-    let unsentWords = words.filter((word) => word.sent === 'False');
-  
-    if (unsentWords.length < 10) {
-      // Reset some words if needed
-      words.forEach((word) => {
-        if (word.sent === 'True') word.sent = 'False';
-      });
-      unsentWords = words.filter((word) => word.sent === 'False');
-    }
-  
-    let selectedWords = unsentWords.slice(0, 10);
-    selectedWords.forEach((word) => (word.sent = 'True'));
-  
-    // Update CSV file
-    const updatedCSV = ['word,definition,example,sent', ...words.map((word) => `${word.word},${word.definition},${word.example},${word.sent}`)].join("\n");
-    fs.writeFileSync(path.join(__dirname, 'vocabulary_database.csv'), updatedCSV);
-  
-    // Generate email content with elegant design
-    let htmlContent = `
+async function sendEmail(words) {
+  let unsentWords = words.filter((word) => word.sent === "False");
+
+  if (unsentWords.length < 10) {
+    words.forEach((word) => {
+      if (word.sent === "True") word.sent = "False";
+    });
+    unsentWords = words.filter((word) => word.sent === "False");
+  }
+
+  let selectedWords = unsentWords.slice(0, 10);
+  selectedWords.forEach((word) => (word.sent = "True"));
+
+  // Update CSV file
+  const updatedCSV = [
+    "word,definition,example,sent",
+    ...words.map(
+      (word) => `${word.word},${word.definition},${word.example},${word.sent}`
+    ),
+  ].join("\n");
+  fs.writeFileSync(path.join(__dirname, "vocabulary_database.csv"), updatedCSV);
+
+  // email content with elegant design
+  let htmlContent = `
     <html>
     <head>
         <style>
@@ -105,22 +105,22 @@ fs.createReadStream(path.join(__dirname, 'vocabulary_database.csv'))
     <body>
         <div class="email-container">
             <h1>Your Daily 10 English Words</h1>
-            <p class="date">Date: ${new Date().toISOString().split('T')[0]}</p>
+            <p class="date">Date: ${new Date().toISOString().split("T")[0]}</p>
             <hr>
   
     `;
-  
-    selectedWords.forEach(({ word, definition, example }) => {
-      htmlContent += `
+
+  selectedWords.forEach(({ word, definition, example }) => {
+    htmlContent += `
         <div class="word">
             <h3>${word}</h3>
             <div class="definition">${definition}</div>
             ${example ? `<div class="example">Example: ${example}</div>` : ""}
         </div>
       `;
-    });
-  
-    htmlContent += `
+  });
+
+  htmlContent += `
             <div class="footer">
                 <p>Thank you for using our daily word service!</p>
             </div>
@@ -128,32 +128,31 @@ fs.createReadStream(path.join(__dirname, 'vocabulary_database.csv'))
     </body>
     </html>
     `;
+
   
-    // Set up Nodemailer transporter with Zoho
-    const transporter = nodemailer.createTransport({
-      host: "smtp.zoho.com", // Zoho SMTP server
-      port: 465, // SSL port
-      secure: true, // Use SSL
-      auth: {
-        user: EMAIL_USER, // Your Zoho email
-        pass: EMAIL_PASS, // Your Zoho app password (generated in Zoho account)
-      },
-    });
-  
-    const mailOptions = {
-      from: EMAIL_USER,
-      to: RECIPIENT_EMAIL,
-      subject: "Your Daily 10 English Words",
-      html: htmlContent, // Use HTML content generated above
-    };
-  
-    // Send email
-    transporter.sendMail(mailOptions, (error, info) => {
-      if (error) {
-        console.log("Error:", error);
-      } else {
-        console.log("Email sent:", info.response);
-      }
-    });
-  }
-  
+  const transporter = nodemailer.createTransport({
+    host: "smtp.zoho.com", 
+    port: 465, 
+    secure: true, 
+    auth: {
+      user: EMAIL_USER, 
+      pass: EMAIL_PASS, 
+    },
+  });
+
+  const mailOptions = {
+    from: EMAIL_USER,
+    to: RECIPIENT_EMAIL,
+    subject: "Your Daily 10 English Words",
+    html: htmlContent, 
+  };
+
+  // Send email
+  transporter.sendMail(mailOptions, (error, info) => {
+    if (error) {
+      console.log("Error:", error);
+    } else {
+      console.log("Email sent:", info.response);
+    }
+  });
+}
